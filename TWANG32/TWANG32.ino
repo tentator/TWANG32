@@ -29,22 +29,23 @@
 
 // 
 
-#define VERSION "2018-06-28"
+//#define VERSION "2018-06-28"
+#define VERSION "2023-06-20"
 
 #include <FastLED.h>
-#include<Wire.h>
+#include <Wire.h>
 #include "Arduino.h"
 #include "RunningMedian.h"
 
 // twang files
 #include "config.h"
 #include "twang_mpu.h"
-#include "enemy.h"
-#include "particle.h"
-#include "spawner.h"
-#include "lava.h"
-#include "boss.h"
-#include "conveyor.h"
+#include "Enemy.h"
+#include "Particle.h"
+#include "Spawner.h"
+#include "Lava.h"
+#include "Boss.h"
+#include "Conveyor.h"
 #include "iSin.h"
 #include "sound.h"
 #include "settings.h"
@@ -58,7 +59,7 @@
 
 #define DIRECTION            1
 #define USE_GRAVITY          0     // 0/1 use gravity (LED strip going up wall)
-#define BEND_POINT           550   // 0/1000 point at which the LED strip goes up the wall
+#define BEND_POINT           50    // 0/1000 point at which the LED strip goes up the wall
 
 // GAME
 long previousMillis = 0;           // Time of the last redraw

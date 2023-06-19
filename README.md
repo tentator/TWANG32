@@ -1,5 +1,5 @@
 # TWANG32
-An ESP32 based, 1D, LED strip, dungeon crawler. inspired by Line Wobbler by Robin B
+10t8or's ESP32 based, 1D, LED strip, dungeon crawler. inspired by Line Wobbler by Robin B and TWANG/32 by bdring
 
 This was ported from the [TWANG fork](https://github.com/bdring/TWANG) by bdring of [Buildlog.net Blog](http://www.buildlog.net/blog?s=twang)
 
@@ -20,7 +20,7 @@ This was ported from the [TWANG fork](https://github.com/bdring/TWANG) by bdring
 - All of the Arduino version game features are functional.
 - The game now has a WiFi access port to get game stats. Connect a smartphone or computer to see them.
   - **SSID:** TWANG_AP
-  - **Password:** 12345666
+  - **Password:** 12345678
   - **URL:** 192.168.4.1
 - You can update these settings over WiFi
   - LED Count
@@ -50,6 +50,8 @@ This was ported from the [TWANG fork](https://github.com/bdring/TWANG) by bdring
 ## Required libraries:
 * [FastLED](http://fastled.io/)
 * [RunningMedian](http://playground.arduino.cc/Main/RunningMedian)
+
+* To compile on Arduino IDE select ESP32-WROOM-DA Module and select serial port, usually something like /dev/ttyUSB0
 
 ## Hardware used:
 * ESP32, I typically use the NodeMCU-32S module
@@ -119,8 +121,5 @@ They all call different functions and variables to setup the level. Each one is 
 * speed: The direction and speed of the travel. Negative moves to base and positive moves towards exit. Must be less than +/- max player speed.
 
 **spawnBoss();** (only one, don't edit boss level)
-<<<<<<< HEAD
 * There are no parameters for a boss, they always spawn in the same place and have 3 lives. Tweak the values of Boss.h to modify
-=======
-* There are no parameters for a boss, they always spawn in the same place and have 3 lives. Tweak the values of Boss.h to modify
->>>>>>> origin/master
+

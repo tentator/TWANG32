@@ -12,7 +12,7 @@
 #define EEPROM_SIZE				   256
 
 // LEDS
-#define NUM_LEDS        144
+#define NUM_LEDS        288
 #define MIN_LEDS				60
 
 
@@ -166,7 +166,7 @@ void processSerial(char inChar)
 }
 
 void change_setting_serial(char *line) {
-  // line formate should be ss=nn
+  // line format should be ss=nn
   // ss is always a 2 character integer
   // nn starts at index 3 and can be up to a 5 character unsigned integer
   
