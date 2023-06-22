@@ -26,7 +26,7 @@
 #ifndef CONFIG_H
 	#define CONFIG_H
 
-#define DATA_PIN        32 // was16
+#define DATA_PIN        32 // was 16
 #define CLOCK_PIN       17 // not used in case of WS2812
 
 /* Game is rendered to this and scaled down to your strip.
@@ -57,7 +57,8 @@
 #endif
 
 #ifdef USE_NEOPIXEL
-  #define LED_TYPE        		 	NEOPIXEL
+  #define LED_TYPE        		 	WS2812 //NEOPIXEL
+  #define LED_COLOR_ORDER      	RGB // typically this will be the order, but switch it if not
 	#define CONVEYOR_BRIGHTNESS 	40  // low neopixel values are nearly off, Neopixels need a higher value
 	#define LAVA_OFF_BRIGHTNESS  	15   // low neopixel values are nearly off, Neopixels need a higher value
 	#define MAX_LEDS 						 	288  // Neopixels cannot handle the framerate

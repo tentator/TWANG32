@@ -17,7 +17,7 @@
 
 
 
-#define DEFAULT_BRIGHTNESS	150 
+#define DEFAULT_BRIGHTNESS	120 
 #define MIN_BRIGHTNESS			10
 #define MAX_BRIGHTNESS 			255
 
@@ -40,7 +40,7 @@ const uint8_t LIVES_PER_LEVEL = 3;      // default lives per level
 #define MAX_JOYSTICK_DEADZONE 12
 
 // AUDIO
-#define DEFAULT_VOLUME          20     // 0 to 255
+#define DEFAULT_VOLUME          200     // 0 to 255 (200 because I'm not using the amplifyer, as it clicks terribly)
 #define MIN_VOLUME							0
 #define MAX_VOLUME							255
 
@@ -383,7 +383,8 @@ void settings_eeprom_write() {
 	EEPROM.commit();	
 	EEPROM.end();
 	
-	sound_resume(); // restore sound interrupt
+	sound_resume(); // restore sound interrupt (but seems to be broken, sounds does not resume..)
+  sound_init(DAC_AUDIO_PIN);
 	
 }
 

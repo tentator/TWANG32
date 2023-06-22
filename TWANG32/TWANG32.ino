@@ -87,7 +87,7 @@ bool attacking = 0;                // Is the attack in progress?
 #define GAMEOVER_SPREAD_DURATION 1000
 #define GAMEOVER_FADE_DURATION 1500
 
-#define WIN_FILL_DURATION 500     // sound has a freq effect that might need to be adjusted
+#define WIN_FILL_DURATION 600     // sound has a freq effect that might need to be adjusted
 #define WIN_CLEAR_DURATION 1000
 #define WIN_OFF_DURATION 1200
 
@@ -208,7 +208,9 @@ void setup() {
 	
 #ifdef USE_NEOPIXEL
   Serial.print("\r\nCompiled for WS2812B (Neopixel) LEDs");
-  FastLED.addLeds<LED_TYPE, DATA_PIN>(leds, MAX_LEDS);
+  // FastLED.addLeds<LED_TYPE, DATA_PIN>(leds, MAX_LEDS);
+	//FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, MAX_LEDS);
+  FastLED.addLeds<LED_TYPE, DATA_PIN, LED_COLOR_ORDER>(leds, MAX_LEDS);
 #endif
 
 #ifdef USE_APA102
@@ -265,6 +267,7 @@ void loop() {
                 levelNumber = -1;
                 stageStartTime = mm;
                 stage = WIN;
+                //sound_resume(); // restart sound
             }
         }else{
             if(lastInputTime+TIMEOUT < mm){        
@@ -449,7 +452,7 @@ void loadLevel(){
 	switch(levelNumber){
 	case 0: // basic introduction 
 		playerPosition = 200;			
-		spawnEnemy(1, 0, 0, 0);					
+		spawnEnemy(5, 0, 0, 0);					 // somehow in position 1 it's not visible! 
 		break;
 	case 1:
 		// Slow moving enemy			
@@ -677,7 +680,7 @@ void gameOver(){
 void die(){
     playerAlive = 0;
     if(levelNumber > 0) 
-		lives --; 
+		lives--; 
 	
     if(lives == 0){
        stage = GAMEOVER;
@@ -772,7 +775,7 @@ void tickBoss(){
 	if(boss.Alive()){
 		boss._ticks ++;
 		for(int i = getLED(boss._pos-BOSS_WIDTH/2); i<=getLED(boss._pos+BOSS_WIDTH/2); i++){
-			leds[i] = CRGB::DarkRed;
+			leds[i] = CRGB::DarkRed; // strange color definition..
 			leds[i] %= 100;
 		}
 		// CHECK COLLISION
@@ -847,7 +850,7 @@ void tickLava(){
 				}
 				for(p = A; p<= B; p++){
 					if(random8(30) < 29)
-					leds[p] = CRGB(150, 0, 0);
+					leds[p] = CRGB(150, 50, 0);
 					else
 					leds[p] = CRGB(180, 100, 0);
 				}				
@@ -902,7 +905,7 @@ void tickConveyors(){
 				
 				b = map(n, 5, 0, 0, CONVEYOR_BRIGHTNESS);
                 if(b > 0) 
-					leds[led] = CRGB(0, 0, b);
+					leds[led] = CRGB(0, 40, b);
             }
 
             if(playerPosition > conveyorPool[i]._startPoint && playerPosition < conveyorPool[i]._endPoint){
@@ -1047,25 +1050,37 @@ void tickWin(long mm) {
 }
 
 
-void drawLives()
+void drawLives() //TODO: does not get correctly displayed (also when one dies it does remove audio aferwards)
 {
   // show how many lives are left by drawing a short line of green leds for each life
   SFXcomplete();  // stop any sounds
-  FastLED.clear(); 
+  FastLED.clear(true); 
   
   int pos = 0;  
-  for (int i = 0; i < lives; i++)
+  for (int i=0; i<lives+1; i++) //i<lives; i++)
   { 
-      for (int j=0; j<4; j++)
-      {
-        leds[pos++] = CRGB(0, 255, 0);
-        FastLED.show();       
-      }
-      leds[pos++] = CRGB(0, 0, 0);      
-      delay(20);
+    leds[pos++] = CRGB(40, 255, 40);
   }
-  FastLED.show();
-  delay(400);
+  //FastLED.show();   // this one seems not to work/show (5th pixel is always red!)
+  FastLEDshowESP32(); // this one works... mystery...
+  delay(200);
+  for (int j = 0; j<3; j++) {
+    for(int i = 0; i<user_settings.led_count; i++){
+      // Divide each channel by a single value
+      leds[i] /= 4;
+    }
+    FastLEDshowESP32();
+    delay(200);
+    for(int i = 0; i<user_settings.led_count; i++){
+      // Multiply each channel by a single value
+      leds[i] *= 4;
+    }
+    FastLEDshowESP32();
+    delay(200);
+  }
+  fadeToBlackBy(leds, user_settings.led_count, 20);
+  FastLEDshowESP32();
+  delay(200);
   FastLED.clear();
 }
 
@@ -1075,7 +1090,7 @@ void drawAttack(){
     if(!attacking) return;
     int n = map(millis() - attackMillis, 0, ATTACK_DURATION, 100, 5);
     for(int i = getLED(playerPosition-(attack_width/2))+1; i<=getLED(playerPosition+(attack_width/2))-1; i++){
-        leds[i] = CRGB(0, 0, n);
+        leds[i] = CRGB(n/2, 0, n);
     }
     if(n > 90) {
         n = 255;
@@ -1084,13 +1099,13 @@ void drawAttack(){
         n = 0;
         leds[getLED(playerPosition)] = CRGB(0, 255, 0);
     }
-    leds[getLED(playerPosition-(attack_width/2))] = CRGB(n, n, 255);
-    leds[getLED(playerPosition+(attack_width/2))] = CRGB(n, n, 255);
+    leds[getLED(playerPosition-(attack_width/2))] = CRGB(40+n/2, n, 200);
+    leds[getLED(playerPosition+(attack_width/2))] = CRGB(40+n/2, n, 200);
 }
 
 int getLED(int pos){
     // The world is 1000 pixels wide, this converts world units into an LED number
-    return constrain((int)map(pos, 0, VIRTUAL_LED_COUNT, 0, user_settings.led_count-1), 0, user_settings.led_count-1);
+    return constrain((int)map(pos, 0, VIRTUAL_LED_COUNT, 0, user_settings.led_count-1), 1, user_settings.led_count-1);
 }
 
 bool inLava(int pos){
@@ -1131,6 +1146,7 @@ void screenSaverTick(){
     int mode = (mm/30000)%4;
   
 	SFXcomplete(); // turn off sound...play testing showed this to be a problem
+  //sound_pause();
 
 	if (mode == 0) {
 		Fire2012();		
@@ -1142,7 +1158,7 @@ void screenSaverTick(){
 	else {
 		random_LED_flashes();
 	}
-	
+	//sound_resume(); // restart sound
 }
 
 // ---------------------------------
