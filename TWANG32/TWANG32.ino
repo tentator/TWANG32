@@ -679,7 +679,7 @@ void gameOver(){
 
 void die(){
     playerAlive = 0;
-    if(levelNumber > 0) 
+    if(levelNumber >= 0) 
 		lives--; 
 	
     if(lives == 0){

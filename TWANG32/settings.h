@@ -368,7 +368,9 @@ void settings_eeprom_read()	{
 
 void settings_eeprom_write() {		
 
-	sound_pause(); // prevent interrupt from causing crash	
+  //soundOff();
+	//sound_pause(); // prevent interrupt from causing crash
+  sound_stop(); // needs to stop audio completely before (interrupt might otherwise be an issue)
 
 	EEPROM.begin(EEPROM_SIZE);
 	
@@ -382,9 +384,11 @@ void settings_eeprom_write() {
 	
 	EEPROM.commit();	
 	EEPROM.end();
-	
-	sound_resume(); // restore sound interrupt (but seems to be broken, sounds does not resume..)
-  sound_init(DAC_AUDIO_PIN);
+
+	sound_init(DAC_AUDIO_PIN); // reinitialize sound from scratch
+	//sound_resume(); // restore sound interrupt (but seems to be broken, sounds does not resume..)
+  sound(1000, user_settings.audio_volume);
+
 	
 }
 
