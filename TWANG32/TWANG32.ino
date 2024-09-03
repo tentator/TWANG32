@@ -449,10 +449,10 @@ void loadLevel(){
 					
 	
 	*/
-	switch(levelNumber){
+	switch(levelNumber) {
 	case 0: // basic introduction 
 		playerPosition = 200;			
-		spawnEnemy(5, 0, 0, 0);					 // somehow in position 1 it's not visible! 
+		spawnEnemy(5, 0, 0, 0);					 // somehow in position 1 it's not visible if your led stripe is too short! 
 		break;
 	case 1:
 		// Slow moving enemy			
@@ -496,7 +496,7 @@ void loadLevel(){
 		spawnEnemy(400, 1, 7, 150);
 		spawnEnemy(450, 1, 5, 400);		
 		break;	
-    case 8:
+  case 8:
 		// lava moving up
 		playerPosition = 200;
 		spawnLava(10, 180, 2000, 2000, 0, Lava::OFF, 0, 0.5);
@@ -561,9 +561,9 @@ void loadLevel(){
 		spawnEnemy(800, 1, 7, 275);
 		spawnEnemy(700, 1, 7, 275);
 		spawnEnemy(500, 1, 5, 250);			
-		spawnPool[0].Spawn(1000, 3000, 4, 0, 3000);
-		spawnPool[1].Spawn(0, 5500, 5, 1, 10000);
-		spawnConveyor(100, 900, -6);
+		spawnPool[0].Spawn(1000, 5000, 4, 0, 2500);
+		spawnPool[1].Spawn(0, 5500, 5, 1, 9000);
+		spawnConveyor(100, 900, -5);
 		break;
 	case 19: // (don't edit last level)
 		// Boss this should always be the last level			
@@ -663,7 +663,6 @@ void nextLevel(){
 		stage = STARTUP;
 		stageStartTime = millis();
 		lives = user_settings.lives_per_level;
-		
 	}
 	else {
 		lives = user_settings.lives_per_level;
@@ -672,15 +671,14 @@ void nextLevel(){
 }
 
 void gameOver(){
-
     levelNumber = 0;
     loadLevel();
 }
 
 void die(){
     playerAlive = 0;
-    if(levelNumber >= 0) 
-		lives--; 
+    if(levelNumber >= 0)  //why? should be useless.. unless we enter die from screensaver?
+		  lives--; 
 	
     if(lives == 0){
        stage = GAMEOVER;
@@ -850,9 +848,9 @@ void tickLava(){
 				}
 				for(p = A; p<= B; p++){
 					if(random8(30) < 29)
-					leds[p] = CRGB(150, 50, 0);
+					leds[p] = CRGB(150, 80, 0);
 					else
-					leds[p] = CRGB(180, 100, 0);
+					leds[p] = CRGB(230, 180, 0); // bright!
 				}				
 			}
 		}
@@ -870,7 +868,7 @@ bool tickParticles(){
 			if (particlePool[p]._power < 5)
 			{
 				brightness = (5 - particlePool[p]._power) * 10;
-				leds[getLED(particlePool[p]._pos)] += CRGB(brightness, brightness/2, brightness/2);\
+				leds[getLED(particlePool[p]._pos)] += CRGB(brightness, brightness/2, brightness/2);
 			}
 			else      
 			leds[getLED(particlePool[p]._pos)] += CRGB(particlePool[p]._power, 0, 0);
@@ -905,7 +903,7 @@ void tickConveyors(){
 				
 				b = map(n, 5, 0, 0, CONVEYOR_BRIGHTNESS);
                 if(b > 0) 
-					leds[led] = CRGB(0, 40, b);
+					leds[led] = CRGB(0, 10, b/3); // shall we try with b/2?
             }
 
             if(playerPosition > conveyorPool[i]._startPoint && playerPosition < conveyorPool[i]._endPoint){
@@ -1050,33 +1048,36 @@ void tickWin(long mm) {
 }
 
 
-void drawLives() //TODO: does not get correctly displayed (also when one dies it does remove audio aferwards)
-{
+void drawLives() { // now works!
   // show how many lives are left by drawing a short line of green leds for each life
   SFXcomplete();  // stop any sounds
   FastLED.clear(true); 
   
   int pos = 0;  
-  for (int i=0; i<lives+1; i++) //i<lives; i++)
+  for (int i=0; i<lives; i++) // lives+1 was not needed anymore, right?
   { 
     leds[pos++] = CRGB(40, 255, 40);
   }
+  for (int i=lives; i<user_settings.lives_per_level; i++) // show also the already lost lives dimmed
+  { 
+    leds[pos++] = CRGB(2, 13, 2);
+  }
   //FastLED.show();   // this one seems not to work/show (5th pixel is always red!)
   FastLEDshowESP32(); // this one works... mystery...
-  delay(200);
+  delay(100);
   for (int j = 0; j<3; j++) {
     for(int i = 0; i<user_settings.led_count; i++){
       // Divide each channel by a single value
       leds[i] /= 4;
     }
     FastLEDshowESP32();
-    delay(200);
+    delay(100);
     for(int i = 0; i<user_settings.led_count; i++){
       // Multiply each channel by a single value
       leds[i] *= 4;
     }
     FastLEDshowESP32();
-    delay(200);
+    delay(100);
   }
   fadeToBlackBy(leds, user_settings.led_count, 20);
   FastLEDshowESP32();
@@ -1084,6 +1085,41 @@ void drawLives() //TODO: does not get correctly displayed (also when one dies it
   FastLED.clear();
 }
 
+void drawLevel() { // new draw current level feature
+  // show at which level we are by drawing a pixel of purple leds for each level
+  SFXcomplete();  // stop any sounds
+  FastLED.clear(true); 
+  
+  int pos = 0;  
+  for (int i=0; i<=levelNumber; i++) // one purple pixel per level
+  { 
+    leds[pos++] = CRGB(210, 0, 240);
+  }
+  for (int i=levelNumber; i<MAX_LEVELS; i++) // dimmed leds showing the levels left till the final boss
+  { 
+    leds[pos++] = CRGB(7, 0, 8);
+  }
+  FastLEDshowESP32(); // this one works... mystery...
+  delay(100);
+  for (int j = 0; j<3; j++) {
+    for(int i = 0; i<user_settings.led_count; i++){
+      // Divide each channel by a single value
+      leds[i] /= 4;
+    }
+    FastLEDshowESP32();
+    delay(100);
+    for(int i = 0; i<user_settings.led_count; i++){
+      // Multiply each channel by a single value
+      leds[i] *= 4;
+    }
+    FastLEDshowESP32();
+    delay(100);
+  }
+  fadeToBlackBy(leds, user_settings.led_count, 20);
+  FastLEDshowESP32();
+  delay(200);
+  FastLED.clear();
+}
 
 
 void drawAttack(){
@@ -1123,6 +1159,7 @@ bool inLava(int pos){
 
 void updateLives(){  
 	drawLives();
+  drawLevel();
 }
 
 void save_game_stats(bool bossKill)

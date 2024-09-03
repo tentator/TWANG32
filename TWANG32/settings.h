@@ -12,18 +12,19 @@
 #define EEPROM_SIZE				   256
 
 // LEDS
-#define NUM_LEDS        288
+#define NUM_LEDS        480 // 288
 #define MIN_LEDS				60
 
 
 
-#define DEFAULT_BRIGHTNESS	120 
+#define DEFAULT_BRIGHTNESS	110 
 #define MIN_BRIGHTNESS			10
-#define MAX_BRIGHTNESS 			255
+#define MAX_BRIGHTNESS 			200 // 255
 
 // PLAYER
 const uint8_t MAX_PLAYER_SPEED = 10;     // Max move speed of the player
-const uint8_t LIVES_PER_LEVEL = 3;      // default lives per level
+const uint8_t LIVES_PER_LEVEL = 3;       // default lives per level
+const uint8_t MAX_LEVELS = 20;           // default max numbers of levels coded
 #define MIN_LIVES_PER_LEVEL 3
 #define MAX_LIVES_PER_LEVEL 9
 
@@ -32,7 +33,7 @@ const uint8_t LIVES_PER_LEVEL = 3;      // default lives per level
 #define JOYSTICK_DIRECTION   1     // 0/1 to flip joystick direction
 #define DEFAULT_ATTACK_THRESHOLD     30000 // The threshold that triggers an attack
 #define MIN_ATTACK_THRESHOLD     20000
-#define MAX_ATTACK_THRESHOLD     30000
+#define MAX_ATTACK_THRESHOLD     35000
 
 
 #define DEFAULT_JOYSTICK_DEADZONE    8     // Angle to ignore

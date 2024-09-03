@@ -58,10 +58,10 @@
 
 #ifdef USE_NEOPIXEL
   #define LED_TYPE        		 	WS2812 //NEOPIXEL
-  #define LED_COLOR_ORDER      	RGB // typically this will be the order, but switch it if not
+  #define LED_COLOR_ORDER      	GRB // RGB // typically this will be the order, but switch it if not
 	#define CONVEYOR_BRIGHTNESS 	40  // low neopixel values are nearly off, Neopixels need a higher value
 	#define LAVA_OFF_BRIGHTNESS  	15   // low neopixel values are nearly off, Neopixels need a higher value
-	#define MAX_LEDS 						 	288  // Neopixels cannot handle the framerate
+	#define MAX_LEDS 						 	500  // Neopixels cannot handle the framerate
 	#define MIN_REDRAW_INTERVAL  	1000.0 / 60.0    // divide by frames per second..if you tweak adjust player speed
 #endif
 
